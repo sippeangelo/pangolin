@@ -117,7 +117,7 @@ export const targets = pgTable("targets", {
     internalPort: integer("internalPort"),
     enabled: boolean("enabled").notNull().default(true),
     path: text("path"),
-    pathMatchType: text("pathMatchType"), // exact, prefix, regex
+    pathMatchType: text("pathMatchType"), // exact, prefix, stripprefix, regex
 });
 
 export const exitNodes = pgTable("exitNodes", {

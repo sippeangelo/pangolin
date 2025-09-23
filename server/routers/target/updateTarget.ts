@@ -28,7 +28,7 @@ const updateTargetBodySchema = z
         port: z.number().int().min(1).max(65535).optional(),
         enabled: z.boolean().optional(),
         path: z.string().optional().nullable(),
-        pathMatchType: z.enum(["exact", "prefix", "regex"]).optional().nullable()
+        pathMatchType: z.enum(["exact", "prefix", "stripprefix", "regex"]).optional().nullable()
     })
     .strict()
     .refine((data) => Object.keys(data).length > 0, {

@@ -116,7 +116,7 @@ const addTargetSchema = z.object({
     port: z.coerce.number().int().positive(),
     siteId: z.number().int().positive(),
     path: z.string().optional().nullable(),
-    pathMatchType: z.enum(["exact", "prefix", "regex"]).optional().nullable()
+    pathMatchType: z.enum(["exact", "prefix", "stripprefix", "regex"]).optional().nullable()
 }).refine(
     (data) => {
         // If path is provided, pathMatchType must be provided
@@ -132,6 +132,7 @@ const addTargetSchema = z.object({
             switch (data.pathMatchType) {
                 case "exact":
                 case "prefix":
+                case "stripprefix":
                     // Path should start with /
                     return data.path.startsWith("/");
                 case "regex":
@@ -580,7 +581,7 @@ export default function Page() {
                             onValueChange={(value) =>
                                 updateTarget(row.original.targetId, {
                                     ...row.original,
-                                    pathMatchType: value as "exact" | "prefix" | "regex"
+                                    pathMatchType: value as "exact" | "prefix" | "stripprefix" | "regex"
                                 })
                             }
                         >
@@ -589,6 +590,7 @@ export default function Page() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="prefix">Prefix</SelectItem>
+                                <SelectItem value="stripprefix">Strip Prefix</SelectItem>
                                 <SelectItem value="exact">Exact</SelectItem>
                                 <SelectItem value="regex">Regex</SelectItem>
                             </SelectContent>

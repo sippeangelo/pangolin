@@ -235,6 +235,7 @@ export async function getTraefikConfig(
         const fullDomain = `${resource.fullDomain}`;
         const transportName = `${key}-transport`;
         const headersMiddlewareName = `${key}-headers-middleware`;
+        const stripPrefixMiddlewareName = `${key}-stripprefix-middleware`;
 
         if (!resource.enabled) {
             continue;
@@ -356,6 +357,17 @@ export async function getTraefikConfig(
                     rule += ` && Path(\`${resource.path}\`)`;
                 } else if (resource.pathMatchType === "prefix") {
                     rule += ` && PathPrefix(\`${resource.path}\`)`;
+                } else if (resource.pathMatchType === "stripprefix") {
+                    rule += ` && PathPrefix(\`${resource.path}\`)`;
+                    if (!config_output.http.middlewares) {
+                        config_output.http.middlewares = {};
+                    }
+                    config_output.http.middlewares[stripPrefixMiddlewareName] = {
+                        stripPrefix: {
+                            prefixes: [resource.path]
+                        }
+                    };
+                    routerMiddlewares.push(stripPrefixMiddlewareName);
                 } else if (resource.pathMatchType === "regex") {
                     rule += ` && PathRegexp(\`${resource.path}\`)`;
                 }
