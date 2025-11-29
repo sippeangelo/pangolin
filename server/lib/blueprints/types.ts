@@ -37,7 +37,8 @@ export const TargetSchema = z.object({
     rewritePath: z.string().optional(), // deprecated alias
     "rewrite-path": z.string().optional(),
     "rewrite-match": z.enum(["exact", "prefix", "regex", "stripPrefix"]).optional().nullable(),
-    priority: z.number().int().min(1).max(1000).optional().default(100)
+    priority: z.number().int().min(1).max(1000).optional().default(100),
+    middlewares: z.string().optional() // comma-separated list of middleware names
 });
 export type TargetData = z.infer<typeof TargetSchema>;
 

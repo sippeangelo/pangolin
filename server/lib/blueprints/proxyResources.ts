@@ -122,7 +122,8 @@ export async function updateProxyResources(
                             ? "/"
                             : undefined),
                     rewritePathType: targetData["rewrite-match"],
-                    priority: targetData.priority
+                    priority: targetData.priority,
+                    middlewares: targetData.middlewares?.trim() || null
                 })
                 .returning();
 
@@ -410,7 +411,8 @@ export async function updateProxyResources(
                                     ? "/"
                                     : undefined),
                             rewritePathType: targetData["rewrite-match"],
-                            priority: targetData.priority
+                            priority: targetData.priority,
+                            middlewares: targetData.middlewares?.trim() || null
                         })
                         .where(eq(targets.targetId, existingTarget.targetId))
                         .returning();

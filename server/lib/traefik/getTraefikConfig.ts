@@ -72,6 +72,7 @@ export async function getTraefikConfig(
             rewritePath: targets.rewritePath,
             rewritePathType: targets.rewritePathType,
             priority: targets.priority,
+            middlewares: targets.middlewares,
 
             // Site fields
             siteId: sites.siteId,
@@ -193,6 +194,7 @@ export async function getTraefikConfig(
             port: row.port,
             internalPort: row.internalPort,
             enabled: row.targetEnabled,
+            middlewares: row.middlewares,
             site: {
                 siteId: row.siteId,
                 type: row.siteType,
@@ -393,6 +395,29 @@ export async function getTraefikConfig(
 
                     routerMiddlewares.push(headersMiddlewareName);
                 }
+            }
+
+            // Handle additional middlewares from Docker labels (target-level)
+            const targetMiddlewaresSet = new Set<string>();
+            for (const target of targets) {
+                if (target.middlewares && target.middlewares.trim().length > 0) {
+                    const targetMiddlewaresArr = target.middlewares
+                        .split(",")
+                        .map((m: string) => m.trim())
+                        .filter((m: string) => m.length > 0); // Allow any non-empty string (supports @file, @docker suffixes)
+                    targetMiddlewaresArr.forEach((m: string) => {
+                        if (m.length > 0) {
+                            targetMiddlewaresSet.add(m);
+                        }
+                    });
+                }
+            }
+            if (targetMiddlewaresSet.size > 0) {
+                const targetMiddlewaresArr = Array.from(targetMiddlewaresSet);
+                routerMiddlewares.push(...targetMiddlewaresArr);
+                logger.debug(
+                    `Added ${targetMiddlewaresArr.length} target-level middlewares to resource ${resource.resourceId}: ${targetMiddlewaresArr.join(", ")}`
+                );
             }
 
             // Build routing rules
